@@ -55,5 +55,8 @@ export async function summarizePdf(
   if (res.status === 413) {
     throw new ApiClientError("FILE_TOO_LARGE", ERROR_MESSAGES.FILE_TOO_LARGE);
   }
+  if (res.status === 504) {
+    throw new ApiClientError("TIMEOUT", ERROR_MESSAGES.TIMEOUT);
+  }
   throw new ApiClientError("INTERNAL", ERROR_MESSAGES.INTERNAL);
 }

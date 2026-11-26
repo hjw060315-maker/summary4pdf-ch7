@@ -43,6 +43,14 @@ describe("summarizePdf", () => {
     });
   });
 
+  it("JSON이 아닌 504는 TIMEOUT", async () => {
+    stubFetch(new Response("FUNCTION_INVOCATION_TIMEOUT", { status: 504 }));
+    await expect(summarizePdf(file, "normal")).rejects.toMatchObject({
+      code: "TIMEOUT",
+      message: ERROR_MESSAGES.TIMEOUT,
+    });
+  });
+
   it("네트워크 실패는 NETWORK", async () => {
     stubFetch(new TypeError("fetch failed"));
     await expect(summarizePdf(file, "normal")).rejects.toMatchObject({
