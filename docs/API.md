@@ -62,3 +62,5 @@
 | `validation.ts` | `parseLength`, `checkFileBasics`(크기만 검사) |
 
 참고: `ERROR_HTTP_STATUS`와 `ERROR_MESSAGES`는 `errors.ts`에 있다(`constants.ts`가 아님).
+
+- PDF 라이브러리: `unpdf`(pdf.js 서버리스 번들) 선택. 네이티브 의존성이 없어 Vercel Node에서 돌고, 암호(PasswordException)·손상을 열기 단계에서 예외로 구분할 수 있어 `UNREADABLE_PDF`로 처리한다.
