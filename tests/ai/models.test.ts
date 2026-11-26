@@ -75,9 +75,9 @@ describe("callModel", () => {
         }),
       ),
     );
-    await expect(callModel(PRIMARY_MODEL, MESSAGES, { timeoutMs: 20 })).rejects.toBeInstanceOf(
-      ModelCallError,
-    );
+    await expect(callModel(PRIMARY_MODEL, MESSAGES, { timeoutMs: 20 })).rejects.toMatchObject({
+      kind: "timeout",
+    });
   });
 
   it("바깥 signal이 취소되면 ModelCallError", async () => {
@@ -94,7 +94,7 @@ describe("callModel", () => {
     const ctl = new AbortController();
     const p = callModel(PRIMARY_MODEL, MESSAGES, { timeoutMs: 5000, signal: ctl.signal });
     ctl.abort();
-    await expect(p).rejects.toBeInstanceOf(ModelCallError);
+    await expect(p).rejects.toMatchObject({ kind: "aborted" });
   });
 
   it("키가 없으면 ModelCallError", async () => {

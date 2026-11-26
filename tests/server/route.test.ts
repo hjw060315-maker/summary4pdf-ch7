@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { ROUTE_MAX_DURATION_S } from "@/shared/constants";
 import { AppError } from "@/shared/errors";
 import { AiUnavailableError } from "@/shared/ai-contract";
 
@@ -25,7 +26,7 @@ function req(length?: string): Request {
 }
 
 describe("POST /api/summarize", () => {
-  it("maxDuration은 60", () => expect(maxDuration).toBe(60));
+  it("maxDuration은 ROUTE_MAX_DURATION_S", () => expect(maxDuration).toBe(ROUTE_MAX_DURATION_S));
 
   it("성공이면 200과 Summary", async () => {
     state.mode = "ok";
