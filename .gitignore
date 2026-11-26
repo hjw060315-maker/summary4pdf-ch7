@@ -3,3 +3,7 @@
 !.env.example
 node_modules/
 .next/
+.superpowers/
+next-env.d.ts
+*.tsbuildinfo
+AGENTS.md
