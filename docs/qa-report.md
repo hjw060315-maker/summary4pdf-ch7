@@ -35,7 +35,7 @@
 | 19 | 파일명 "논문 최종본 (1)#.pdf" (검토 3) | 통과 | 200, 서버 로그에 파일명 없음 |
 | 20 | 첫 모델 실패 후 두 번째 모델 | 통과 | 실제 로그에 첫 모델 `error=timeout` 뒤 200이 2번(28.3초, 34.9초). 단위 시험 `tests/ai/summarize.test.ts`의 429·JSON 깨짐·요점 수 불일치 폴백도 통과 |
 | 21 | 두 모델 모두 실패 | 통과 | 포트 3001에 더미 `OPENROUTER_API_KEY`를 준 서버, 503 AI_BUSY, 0.65초. 로그는 두 모델의 `error=http-4xx`뿐 |
-| 22 | 깨진 AI 응답 | 통과(단위만) | `tests/ai/parse.test.ts`, `summarize.test.ts`(둘 다 불량이면 AiUnavailableError). 실서버로 만들 방법이 없어 못 돌림 |
+| 22 | 깨진 AI 응답 | 통과(단위만) | `tests/ai/summarize.test.ts`(둘 다 불량이면 AiUnavailableError). 실서버로 만들 방법이 없어 못 돌림 |
 | 23 | 마감·시간 초과 | 통과(단위만) | `summarize.test.ts` 마감 경과, 남은 3초 타임아웃, TIMEOUT 변환 시험. 실서버 55초 경계는 못 함 (#31) |
 | 24 | length 값 오류 | 통과 | 400 BAD_REQUEST |
 | 25 | file 없음, length 없음, file이 문자열, JSON 본문 | 통과 | 모두 400 BAD_REQUEST, 같은 문구 |
@@ -61,7 +61,7 @@
 - 제안: 의도된 동작이면 계획 문구를 "결과 화면과 로그"로 고친다. 이름까지 숨겨야 하면 이 줄을 "PDF 1개 선택됨"으로 바꾼다. 사용자 확인이 필요하다.
 
 ### 낮음 2. 첫 모델 시간 초과가 잦아 응답이 느림
-- 위치: `src/ai/summarize.ts:199-229`, `src/shared/constants.ts:178` (`MODEL_TIMEOUT_MS` 25초)
+- 위치: `src/ai/summarize.ts:17-36`, `src/shared/constants.ts:14` (`MODEL_TIMEOUT_MS` 25초)
 - 내용: 시험 중 첫 모델이 25초 시간 초과를 낸 경우가 11회 중 2회 있었다. 이때 총 응답이 28~35초였다. 정상 동작이고 55초 마감 안이지만 두 번째 모델도 느리면 마감에 가까워진다. 무료 모델 상태에 따라 달라지는 문제다.
 - 재현: 50쪽 PDF를 short로 올리면 35초 걸렸다. 단, 모델 상태에 따라 달라진다.
 - 제안: 필수 수정은 아니다. 느린 첫 모델이 계속되면 첫 모델 시간 제한을 줄이거나 화면 진행 문구에 "최대 1분"을 알려 주는 것을 검토한다.
