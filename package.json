@@ -25,6 +25,7 @@
     "eslint-config-next": "^16.4.6",
     "pdf-lib": "^1.17.1",
     "typescript": "^5.9.3",
+    "vite": "^8.3.8",
     "vitest": "^5.1.2"
   }
 }
