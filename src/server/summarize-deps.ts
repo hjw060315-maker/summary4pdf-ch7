@@ -1,9 +1,3 @@
-import { AiUnavailableError } from "@/shared/ai-contract";
-import type { Summarize } from "@/shared/ai-contract";
-
+// 라우트가 쓰는 의존을 한곳에서 연결한다.
 export { countPages, extractText } from "./pdf";
-
-// 임시 자리표시자: 이후 작업에서 실제 src/ai의 summarize로 교체한다.
-export const summarize: Summarize = async () => {
-  throw new AiUnavailableError();
-};
+export { summarize } from "@/ai";
