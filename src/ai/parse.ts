@@ -9,7 +9,7 @@ const text = z.string().refine((s) => s.trim().length > 0);
 const schema = z.object({
   oneLine: text,
   points: z.array(text),
-  keywords: z.array(text).min(KEYWORDS_MIN).max(KEYWORDS_MAX),
+  keywords: z.array(text),
 });
 
 function extractJson(raw: string): unknown {
@@ -35,7 +35,10 @@ export function parseSummary(raw: string, length: SummaryLength, textLength: num
   if (!parsed.success) return null;
   const n = POINTS_BY_LENGTH[length];
   const count = parsed.data.points.length;
-  const ok = textLength < SHORT_TEXT_CHARS ? count >= 1 && count <= n : count === n;
+  const short = textLength < SHORT_TEXT_CHARS;
+  const kw = parsed.data.keywords.length;
+  const keywordsOk = short ? kw >= 1 && kw <= KEYWORDS_MAX : kw >= KEYWORDS_MIN && kw <= KEYWORDS_MAX;
+  const ok = keywordsOk && (short ? count >= 1 && count <= n : count === n);
   if (!ok) return null;
   return {
     oneLine: parsed.data.oneLine.trim(),

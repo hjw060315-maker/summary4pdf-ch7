@@ -29,7 +29,7 @@ export function buildMessages(text: string, length: SummaryLength): ChatMessage[
     `- 반드시 JSON 객체 하나로만 답한다. 설명, 인사, 코드 블록 표시를 붙이지 않는다.`,
     `- JSON 형식: {"oneLine": "문서 전체를 한 문장으로", "points": ["요점", ...], "keywords": ["키워드", ...]}`,
     `- points는 정확히 ${n}개다. 단, 문서가 아주 짧아 ${n}개를 채울 수 없으면 1개 이상 ${n}개 이하로 쓴다.`,
-    `- keywords는 ${KEYWORDS_MIN}개 이상 ${KEYWORDS_MAX}개 이하로 쓴다.`,
+    `- keywords는 ${KEYWORDS_MIN}개 이상 ${KEYWORDS_MAX}개 이하로 쓴다. 단, 문서가 아주 짧아 ${KEYWORDS_MIN}개를 채울 수 없으면 1개 이상 ${KEYWORDS_MAX}개 이하로 쓴다.`,
     "- 모든 값은 비어 있지 않은 문자열이다.",
   ].join("\n");
   const user = `아래 구분자 사이의 문서를 요약해 JSON으로만 답하라.\n${DOC_START}\n${stripDelimiters(text)}\n${DOC_END}`;
