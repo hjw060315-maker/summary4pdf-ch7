@@ -5,6 +5,8 @@ export interface SummarizeInput {
   length: SummaryLength;
   /** 전체 마감 시각(Date.now() 기준 epoch ms) */
   deadlineAt: number;
+  /** 요청자가 떠나면 취소된다. 취소되면 다음 모델을 부르지 않는다(선택). */
+  signal?: AbortSignal;
 }
 
 /** AI 구역이 구현하고 라우트가 호출하는 약속 */

@@ -6,7 +6,7 @@ import { parseSummary } from "./parse";
 import { buildMessages, stripDelimiters } from "./prompt";
 import { MAX_TEXT_CHARS, truncateText } from "./truncate";
 
-export const summarize: Summarize = async ({ text, length, deadlineAt }) => {
+export const summarize: Summarize = async ({ text, length, deadlineAt, signal }) => {
   const cleaned = stripDelimiters(text);
   const { text: body, truncated } = truncateText(cleaned, MAX_TEXT_CHARS);
   const messages = buildMessages(body, length);
@@ -15,13 +15,15 @@ export const summarize: Summarize = async ({ text, length, deadlineAt }) => {
   let cutByDeadline = false;
 
   for (const model of [PRIMARY_MODEL, FALLBACK_MODEL]) {
+    // 요청자가 떠났으면 더 부르지 않는다
+    if (signal?.aborted) throw new AiUnavailableError();
     const remaining = deadlineAt - Date.now();
     if (remaining <= 0) throw new AiDeadlineError();
     const timeoutMs = Math.min(MODEL_TIMEOUT_MS, remaining);
 
     cutByDeadline = false;
     try {
-      const raw = await callModel(model, messages, { timeoutMs });
+      const raw = await callModel(model, messages, { timeoutMs, signal });
       const parsed = parseSummary(raw, length, cleaned.length);
       if (parsed) return { ...parsed, truncated };
       console.warn(`[ai] model=${model} error=invalid-format`);

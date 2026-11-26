@@ -66,6 +66,13 @@ describe("runSummarize", () => {
     expect(deps.summarize.mock.calls[0][0]).toMatchObject({ text: "본문", length: "normal" });
   });
 
+  it("deps.signal을 summarize에 넘긴다", async () => {
+    const signal = new AbortController().signal;
+    const deps = makeDeps({ signal });
+    await runSummarize(makeForm({ length: "normal" }), deps);
+    expect(deps.summarize.mock.calls[0][0].signal).toBe(signal);
+  });
+
   it("length가 없거나 잘못되면 BAD_REQUEST", async () => {
     expect(await codeOf(runSummarize(makeForm(), makeDeps()))).toBe("BAD_REQUEST");
     expect(await codeOf(runSummarize(makeForm({ length: "huge" }), makeDeps()))).toBe("BAD_REQUEST");

@@ -26,6 +26,7 @@ export async function POST(request: Request): Promise<Response> {
       extractText,
       summarize,
       now: () => Date.now(),
+      signal: request.signal,
     });
     return Response.json(summary, { status: 200 });
   } catch (e) {

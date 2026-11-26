@@ -10,6 +10,7 @@ export interface SummarizeDeps {
   countPages: (data: Uint8Array) => Promise<number>;
   summarize: Summarize;
   now: () => number;
+  signal?: AbortSignal;
 }
 
 const MAGIC = [0x25, 0x50, 0x44, 0x46, 0x2d]; // "%PDF-"
@@ -54,7 +55,9 @@ export async function runSummarize(form: FormData, deps: SummarizeDeps): Promise
     if (pages > MAX_PAGES) throw new AppError("TOO_MANY_PAGES");
 
     const { text } = await deps.extractText(data);
-    return await deps.summarize({ text, length, deadlineAt: startedAt + DEADLINE_MS });
+    return await deps.summarize({ text, length, deadlineAt: startedAt + DEADLINE_MS,
+      signal: deps.signal,
+    });
   } catch (e) {
     throw toAppError(e);
   }

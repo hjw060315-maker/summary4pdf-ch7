@@ -50,6 +50,17 @@ describe("parseSummary", () => {
     expect(parseSummary(blank, "short", 1000)).toBeNull();
   });
 
+  it("300자 미만이면 키워드 1..10개 허용, 0개 또는 초과는 null", () => {
+    expect(parseSummary(json(2, 2), "short", 299)).not.toBeNull();
+    expect(parseSummary(json(2, 1), "short", 299)).not.toBeNull();
+    expect(parseSummary(json(2, 0), "short", 299)).toBeNull();
+    expect(parseSummary(json(2, 11), "short", 299)).toBeNull();
+  });
+
+  it("300자 이상이면 키워드 2개는 null", () => {
+    expect(parseSummary(json(3, 2), "short", 300)).toBeNull();
+  });
+
   it("JSON이 아니거나 형식이 틀리면 null", () => {
     expect(parseSummary("그냥 글", "short", 1000)).toBeNull();
     expect(parseSummary("{", "short", 1000)).toBeNull();
@@ -106,6 +117,25 @@ describe("summarize", () => {
     const r = await summarize(input({ text: "짧은 문서입니다. ".repeat(8) }));
     expect(r.points).toHaveLength(2);
     expect(mock).toHaveBeenCalledTimes(1);
+  });
+
+  it("signal이 취소되면 두 번째 모델을 부르지 않는다", async () => {
+    const ctl = new AbortController();
+    mock.mockImplementationOnce(async () => {
+      ctl.abort();
+      throw new ModelCallError(PRIMARY_MODEL, "aborted");
+    });
+    mock.mockResolvedValueOnce(json(3));
+    await expect(summarize(input({ signal: ctl.signal }))).rejects.toBeInstanceOf(AiUnavailableError);
+    expect(mock).toHaveBeenCalledTimes(1);
+    expect(mock.mock.calls[0][2].signal).toBe(ctl.signal);
+  });
+
+  it("이미 취소된 signal이면 모델을 부르지 않는다", async () => {
+    const ctl = new AbortController();
+    ctl.abort();
+    await expect(summarize(input({ signal: ctl.signal }))).rejects.toBeInstanceOf(AiUnavailableError);
+    expect(mock).not.toHaveBeenCalled();
   });
 
   it("둘 다 실패하면 AiUnavailableError", async () => {

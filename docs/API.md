@@ -58,7 +58,7 @@
 | `types.ts` | `SummaryLength`, `Summary` |
 | `constants.ts` | `MAX_FILE_BYTES`(4MB), `MAX_PAGES`(50), `POINTS_BY_LENGTH`, `KEYWORDS_MIN/MAX`, `ROUTE_MAX_DURATION_S`(60), `DEADLINE_MS`(55000), `MODEL_TIMEOUT_MS`(25000) |
 | `errors.ts` | `ErrorCode`, `ERROR_HTTP_STATUS`, `ERROR_MESSAGES`, `AppError` |
-| `ai-contract.ts` | `summarize({ text, length, deadlineAt }): Promise<Summary>` 약속, `AiUnavailableError`(두 모델 실패 -> `AI_BUSY`), `AiDeadlineError`(마감 초과 -> `TIMEOUT`) |
+| `ai-contract.ts` | `summarize({ text, length, deadlineAt, signal? }): Promise<Summary>` 약속, `AiUnavailableError`(두 모델 실패 -> `AI_BUSY`), `AiDeadlineError`(마감 초과 -> `TIMEOUT`) |
 | `validation.ts` | `parseLength`, `checkFileBasics`(크기만 검사) |
 
 참고: `ERROR_HTTP_STATUS`와 `ERROR_MESSAGES`는 `errors.ts`에 있다(`constants.ts`가 아님).
