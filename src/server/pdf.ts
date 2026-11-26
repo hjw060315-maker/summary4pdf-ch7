@@ -17,7 +17,8 @@ async function openDocument(data: Uint8Array): Promise<PdfDoc> {
   assertPdfHeader(data);
   try {
     return await getDocumentProxy(new Uint8Array(data));
-  } catch {
+  } catch (e) {
+    console.warn("[pdf] open failed:", e instanceof Error ? e.name : "UnknownError");
     // 암호(PasswordException)·손상(InvalidPDFException 등) 모두 읽을 수 없는 파일
     throw new AppError("UNREADABLE_PDF");
   }
@@ -53,7 +54,8 @@ export async function extractText(
     try {
       const result = await unpdfExtractText(pdf, { mergePages: true });
       text = result.text;
-    } catch {
+    } catch (e) {
+      console.warn("[pdf] extract failed:", e instanceof Error ? e.name : "UnknownError");
       throw new AppError("UNREADABLE_PDF");
     }
     if (text.replace(/\s/g, "").length === 0) throw new AppError("NO_TEXT");

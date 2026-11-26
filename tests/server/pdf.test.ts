@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { countPages, extractText } from "../../src/server/pdf";
 
 const load = (name: string) =>
@@ -63,5 +63,22 @@ describe("extractText", () => {
     console.log(`[측정] 50쪽 추출 ${Math.round(ms)}ms`);
     expect(r.pageCount).toBe(50);
     expect(ms).toBeLessThan(10_000);
+  });
+});
+
+describe("실패 로그", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it("열기 실패는 오류 이름만 로그에 남기고 PDF 내용은 남기지 않는다", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(await codeOf(countPages(load("corrupt.pdf")))).toBe("UNREADABLE_PDF");
+    // pdf.js 자체 경고는 제외하고 우리 로그만 본다
+    const ours = warn.mock.calls.filter((c) => String(c[0]).startsWith("[pdf]"));
+    expect(ours).toHaveLength(1);
+    const args = ours[0];
+    expect(args[0]).toBe("[pdf] open failed:");
+    expect(args).toHaveLength(2);
+    expect(args[1]).toMatch(/^[A-Za-z]+$/);
+    expect(args.join(" ")).not.toMatch(/corrupt|%PDF/);
   });
 });
